@@ -1,3 +1,5 @@
+var product;
+chrome.storage.sync.set({'customer_id':'cus_KAbAoq6_mpiMRk', 'postmates_api_key':'c155af77-5632-4c43-b712-25ef08b855c5'}, function() { console.log('Saved local files!'); });
 chrome.extension.sendMessage({}, function(response) {
 	var readyStateCheckInterval = setInterval(function() {
 	if (document.readyState === "complete") {
@@ -20,9 +22,7 @@ chrome.extension.sendMessage({}, function(response) {
 });
 
 function hasproduct() { 
-    // Check if on one of our 'known' sellers
-    var store = document.location.hostname.match(/^.*?\.(.*?)\..*$/);
-    if (typeof productmap[store] === undefined) {
+    if (knownStore()) {
         // Or if it fits into some heuristics
         if (!document.body.innerHTML.match(/product/) &&
             !document.body.innerHTML.match(/seller/) &&
@@ -32,15 +32,18 @@ function hasproduct() {
     return true;
 }
 
+// Check if on one of our 'known' sellers
+function knownStore() {
+    return productmap[document.location.hostname.match(/^.*?\.(.*?)\..*$/)[1]] !== undefined;
+}
+
 function getPrice() {
    return document.body.innerText.match(/[$¢¥£]([0-9]+.?[0-9]{2})/)[1];
 }
 
 function getName() {
-    // Check if on one of our 'known' sellers
-    var store = document.location.hostname.match(/^.*?\.(.*?)\..*$/)[1];
-    if (typeof productmap[store] !== undefined) {
-        return document.querySelector(productmap[store]).innerText;
+    if (knownStore()) {
+        return document.querySelector(productmap[document.location.hostname.match(/^.*?\.(.*?)\..*$/)[1]]).innerText;
     }
 
     // array of possible product names
@@ -67,12 +70,15 @@ function getStrings(nodeList) {
 
 function showButton() {
     // append a magical button next to the checkout or buy button
-    /*var elements = document.querySelectorAll("[class*='cart'] button,[id*='cart'] button,[class*='cart'] input,[id*='cart'] input")[0]
+    var elements = knownStore() ? document.querySelectorAll("div#oneClickSignIn,input#add-to-cart, button.addtoCart, button.add-to-cart, div.cart-button")
+                                : document.querySelectorAll("button[class*='cart'],button[id*='cart'],input[class*='cart'],input[id*='cart'],button[class*='Cart'],button[id*='Cart'],input[class*='Cart'],input[id*='Cart']");
+    var theirbutton = elements[0];
     var ourbutton = theirbutton.parentElement.appendChild(document.createElement('button'));
     ourbutton.innerText = "Get Instafication"
     ourbutton.id = "instafication";
     ourbutton.style.height = theirbutton.style.height;
-    ourbutton.style.width = theirbutton.style.width;*/
+    ourbutton.style.width = theirbutton.style.width;
+    ourbutton.addEventListener("click", findLocal, false);
 }
 
 var productmap = {
@@ -89,8 +95,82 @@ var Product = (function() {
         if (typeof name !== undefined) this.name = name;
         if (typeof price !== undefined) this.price = price;
     }
-
     Product.prototype.someFunction = function() {}
-
     return Product;
 })();
+
+function findLocal() {
+    var xhr = new XMLHttpRequest();
+    var our_api = "https://instafication-api.herokuapp.com/search/";
+    var response;
+
+    xhr.open("GET", our_api + encodeURIComponent(product.name), true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            response = JSON.parse(xhr.responseText);
+            product.localprice = response.price;
+            product.localstore = response.store;
+            console.log('found local', product);
+            getQuote();
+        }
+    }
+    xhr.send();
+}
+
+function getQuote() {
+    var xhr = new XMLHttpRequest();
+    var postmates_api = "https://api.postmates.com/";
+    var params={};
+    var response;
+
+    navigator.geolocation.getCurrentPosition(function(loc) { 
+        params['dropoff_address'] = loc.coords.latitude + "," + loc.coords.longitude;
+        params['pickup_address'] = product.localstore + " Philadelphia, PA";
+        console.log( Object.keys(params).map(function(k) { return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]) }).join('&') );
+        
+        var request = 'v1/customers/cus_KAbAoq6_mpiMRk/delivery_quotes?' + 
+            Object.keys(params).map(function(k) { return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]) }).join('&');
+        xhr.open("POST", postmates_api, true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader("Authorization", 'Basic '+btoa('c155af77-5632-4c43-b712-25ef08b855c5:'));
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                response = JSON.parse(xhr.responseText);
+                console.log('got quote', response);
+            }
+        }
+        xhr.send(request);
+    });
+}
+
+function displayConfirm() {
+
+}
+
+function createDelivery() {
+    var xhr = new XMLHttpRequest();
+    var postmates_api = "https://api.postmates.com";
+    var params={};
+    var response;
+
+    navigator.geolocation.getCurrentLocation(function(loc) { 
+        params['dropoff_address'] = loc.coords.latitude + "," + loc.coords.longitude;
+        params['pickup_address'] = product.localstore + " Philadelphia, PA";
+
+        var request = encodeURIComponent(JSON.stringify(params));
+        xhr.open("POST", postmates_api, true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                response = JSON.parse(xhr.responseText);
+                console.log('created delivery', response);
+            }
+        }
+        xhr.send(request);
+    });
+}
+

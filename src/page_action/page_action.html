@@ -12,6 +12,18 @@
 </style>
 
 <div id="mainPopup">
-<h1>Hello extensionizr!</h1>
-<p>To shut this popup down, edit the manifest file and remove the "default popup" key. To edit it, just edit ext/page_action/page_action.html. The CSS is there, too.</p>
+<h1>Welcome to Instafication</h1>
+<p>To use this extension, please log in to your Postmates account.</p>
+<form name="setupForm" onsubmit="return setup()">
+    <div style="display:block"><label>Username</label><input name="user" type="text"></div>
+    <div style="display:block"><label>Password</label><input name="password" type="password"></div>
+    <input type="submit"></input>
+</form>
+
+<script>
+    function setup() {
+        console.log('hello!');
+        return false;
+    }
+</script>
 </div>
