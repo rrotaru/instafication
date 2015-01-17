@@ -1,3 +1,23 @@
 /**
  * Place your custom CSS styles here.
  **/
+button#instafication {
+  background    : #80dbd4;
+  margin-top    : 4px;
+  border-radius : 4px;
+  color         : white;
+  text-align    : center;
+  font-family   : sans-serif;
+  font-size     : 16px;
+  line-height   : 28px;
+  cursor        : pointer;
+  border        : none;
+}
+
+button#instafication:hover {
+  background : #2abdb8; 
+}
+
+.a-button-inner { 
+    overflow: visible !important;
+}
