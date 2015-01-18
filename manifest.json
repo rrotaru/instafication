@@ -32,6 +32,8 @@
         "<all_urls>" 
       ],
       "css": [
+        "src/inject/jquery-ui.css",
+        "src/inject/jquery.progressbar.css",
         "src/inject/inject.css"
       ]
     },
@@ -40,6 +42,9 @@
         "<all_urls>"
       ],
       "js": [
+        "src/inject/jquery.js",
+        "src/inject/jquery-ui.js",
+        "src/inject/jquery.progressbar.js",
         "src/inject/inject.js"
       ]
     }

@@ -70,15 +70,15 @@ function getStrings(nodeList) {
 
 function showButton() {
     // append a magical button next to the checkout or buy button
-    var elements = knownStore() ? document.querySelectorAll("div#oneClickSignIn,input#add-to-cart, button.addtoCart, button.add-to-cart, div.cart-button")
+    var elements = knownStore() ? document.querySelectorAll("div#OneClickBox,input#add-to-cart, button.addtoCart, button.add-to-cart, div.cart-button")
                                 : document.querySelectorAll("button[class*='cart'],button[id*='cart'],input[class*='cart'],input[id*='cart'],button[class*='Cart'],button[id*='Cart'],input[class*='Cart'],input[id*='Cart']");
     var theirbutton = elements[0];
     var ourbutton = theirbutton.parentElement.appendChild(document.createElement('button'));
     ourbutton.innerText = "Get Instafication"
     ourbutton.id = "instafication";
     ourbutton.style.height = theirbutton.style.height;
-    ourbutton.style.width = theirbutton.style.width;
-    ourbutton.addEventListener("click", findLocal, false);
+    ourbutton.style.width = theirbutton.clientWidth + 'px';
+    ourbutton.addEventListener("click", function(e) { e.stopPropagation(); e.preventDefault(); findLocal(); }, false);
 }
 
 var productmap = {
@@ -121,25 +121,27 @@ function findLocal() {
 
 function getQuote() {
     var xhr = new XMLHttpRequest();
-    var postmates_api = "https://api.postmates.com/";
+    var postmates_api = "https://api.postmates.com/v1/customers/"
     var params={};
     var response;
 
-    navigator.geolocation.getCurrentPosition(function(loc) { 
+    navigator.geolocation.getCurrentPosition(function(loc) {
         params['dropoff_address'] = loc.coords.latitude + "," + loc.coords.longitude;
         params['pickup_address'] = product.localstore + " Philadelphia, PA";
-        console.log( Object.keys(params).map(function(k) { return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]) }).join('&') );
         
-        var request = 'v1/customers/cus_KAbAoq6_mpiMRk/delivery_quotes?' + 
-            Object.keys(params).map(function(k) { return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]) }).join('&');
-        xhr.open("POST", postmates_api, true);
+        var request = Object.keys(params).map(function(k) { return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]) }).join('&');
+        xhr.open("POST", postmates_api+'cus_KAbAoq6_mpiMRk/delivery_quotes', true);
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhr.setRequestHeader("Authorization", 'Basic '+btoa('c155af77-5632-4c43-b712-25ef08b855c5:'));
+        xhr.addEventListener("progress", updatebar, false);
+        xhr.addEventListener("load", finishbar, false);
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 response = JSON.parse(xhr.responseText);
+                product.quote_id = response.id;
                 console.log('got quote', response);
+                displayConfirm();
             }
         }
         xhr.send(request);
@@ -147,22 +149,46 @@ function getQuote() {
 }
 
 function displayConfirm() {
-
+    $(function() {
+        var NewDialog = $('<div id="MenuDialog"><p>You can get this now with Postmates for $99.99!</p></div>');
+        NewDialog.dialog({
+            modal: true,
+            title: "Confirm your delivery",
+            show: 'clip',
+            hide: 'clip',
+            buttons: [
+                {text: "Confirm", click: function() {createDelivery(); $(this).dialog("close");}},
+                {text: "Cancel", click: function() {$(this).dialog("close");}}
+            ]
+        });
+        NewDialog.dialog("open");
+    });
 }
 
 function createDelivery() {
     var xhr = new XMLHttpRequest();
-    var postmates_api = "https://api.postmates.com";
+    var postmates_api = "https://api.postmates.com/v1/customers/";
     var params={};
     var response;
 
-    navigator.geolocation.getCurrentLocation(function(loc) { 
-        params['dropoff_address'] = loc.coords.latitude + "," + loc.coords.longitude;
+    navigator.geolocation.getCurrentPosition(function(loc) { 
+        params['manifest'] = product.name;
+        params['pickup_name'] = product.localstore;
         params['pickup_address'] = product.localstore + " Philadelphia, PA";
+        params['pickup_phone_number'] = '123-456-7890';
+        params['pickup_business_name'] = product.localstore;
+        params['pickup_notes'] = 'Ordered using Instafication. Pick up at front desk';
+        params['dropoff_name'] = 'Me';
+        params['dropoff_address'] = loc.coords.latitude + "," + loc.coords.longitude;
+        params['dropoff_phone_number'] = '098-654-7321';
+        params['dropoff_business_name'] = 'me';
+        params['dropoff_notes'] = 'Leave it here.';
+        params['quote_id'] = product.quote_id;
 
-        var request = encodeURIComponent(JSON.stringify(params));
-        xhr.open("POST", postmates_api, true);
+        var request = Object.keys(params).map(function(k) { return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]) }).join('&');
+        xhr.open("POST", postmates_api+'cus_KAbAoq6_mpiMRk/deliveries', true);
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader("Authorization", 'Basic '+btoa('c155af77-5632-4c43-b712-25ef08b855c5:'));
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
@@ -173,4 +199,34 @@ function createDelivery() {
         xhr.send(request);
     });
 }
+
+function updatebar(e) {
+    $("body").progressbar(e.loaded / e.total);
+}
+
+function finishbar(e) {
+    $("body").progressbar(e.total);
+}
+
+(function() {
+  $(document).ready(function() {
+    var runProgressBar;
+    runProgressBar = function() {
+      var i, interval,
+        _this = this;
+      i = 0;
+      clearInterval(interval);
+      return interval = setInterval(function() {
+        if (i > 10) {
+          i = 0;
+          clearInterval(interval);
+        }
+        $("body").progressbar(i * 10);
+        return i++;
+      }, 500);
+    };
+    return window.runProgressBar = runProgressBar;
+  });
+ 
+}).call(this);
 
