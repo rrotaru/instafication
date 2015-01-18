@@ -6564,26 +6564,6 @@ var dialog = $.widget( "ui.dialog", {
 			}
 		});
 
-		// support: IE
-		// Use type="button" to prevent enter keypresses in textboxes from closing the
-		// dialog in IE (#9312)
-		this.uiDialogTitlebarClose = $( "<button type='button'></button>" )
-			.button({
-				label: this.options.closeText,
-				icons: {
-					primary: "ui-icon-closethick"
-				},
-				text: false
-			})
-			.addClass( "ui-dialog-titlebar-close" )
-			.appendTo( this.uiDialogTitlebar );
-		this._on( this.uiDialogTitlebarClose, {
-			click: function( event ) {
-				event.preventDefault();
-				this.close( event );
-			}
-		});
-
 		uiDialogTitle = $( "<span>" )
 			.uniqueId()
 			.addClass( "ui-dialog-title" )

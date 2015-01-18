@@ -2,11 +2,12 @@
  * Place your custom CSS styles here.
  **/
 button#instafication {
-  background    : #b52025 !important;
+  background    : url('chrome-extension://__MSG_@@extension_id__/icons/InstantButton.svg') no-repeat top left !important;
+  background-size : 100% !important;
   display       : block !important;
   margin        : 4px auto !important;
   margin-top    : 4px !important;
-  border-radius : 4px !important;
+  border-radius : 11px !important;
   color         : white !important;
   text-align    : center !important;
   font-family   : sans-serif !important;
@@ -14,15 +15,27 @@ button#instafication {
   line-height   : 28px !important;
   cursor        : pointer !important;
   min-width     : 120px !important;
+  height        : 47px !important;
   border        : none !important;
+  padding       : 0px !important;
 }
 
 button#instafication:hover {
-  background : #b52025 !important; 
+  background    : url('chrome-extension://__MSG_@@extension_id__/icons/InstantButton.svg') no-repeat top left !important;
+  background-size : 100% !important;
+  opacity       : 0.8;
+}
+
+button#instafication:active {
+  opacity       : 1;
 }
 
 button#instafication:after {
   background-image: none !important;
+}
+
+button#instafication:focus {
+  outline: none !important;
 }
 
 .a-button-inner { 

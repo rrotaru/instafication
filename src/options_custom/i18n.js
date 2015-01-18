@@ -20,27 +20,27 @@ this.i18n = {
         "de": "Information"
     },
     "login": {
-        "en": "Login",
-        "de": "Anmeldung"
+        "en": "Postmates API",
+        "de": "API dur Postmates"
     },
     "username": {
-        "en": "Username:",
+        "en": "Customer ID",
         "de": "Benutzername:"
     },
     "password": {
-        "en": "Password:",
+        "en": "API Key",
         "de": "Passwort:"
     },
     "x-characters": {
-        "en": "6 - 12 characters",
-        "de": "6 - 12 Zeichen"
+        "en": "15 - 20 characters",
+        "de": "15 - 20 Zeichen"
     },
     "x-characters-pw": {
-        "en": "10 - 18 characters",
-        "de": "10 - 18 Zeichen"
+        "en": "36 characters",
+        "de": "36 Zeichen"
     },
     "description": {
-        "en": "This is a description. You can write any text inside of this.<br>\
+        "en": "In order to properly use Instant and the Postmates API, you must have a valid account with an API key and a customer ID<br>\
         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut\
         labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores\
         et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem\
@@ -57,7 +57,7 @@ this.i18n = {
         Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
     },
     "logout": {
-        "en": "Logout",
+        "en": "Temporary session",
         "de": "Abmeldung"
     },
     "enable": {
@@ -65,7 +65,7 @@ this.i18n = {
         "de": "Aktivieren"
     },
     "disconnect": {
-        "en": "Disconnect:",
+        "en": "Delete info",
         "de": "Trennen:"
     }
 };

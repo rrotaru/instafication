@@ -1,6 +1,7 @@
 <!doctype html>
 <style type="text/css">
 	#mainPopup {
+        overflow: scroll;
 		padding: 10px;
 		height: 200px;
 		width: 400px;
@@ -9,21 +10,67 @@
 	h1 {
 		font-size: 2em;
 	}
+    .thumb {
+        position: relative;
+        display: inline-block;
+        margin: 7px;
+        box-shadow: 1px 1px 1px 1px rgba(1,1,1,.5);
+        width: 100px;
+        height: 132px;
+        padding: 1em;
+        float: left;
+    }
+    .thumb span {
+        display: block;
+        margin-bottom: 3px;
+    }
+    .thumb button.close {
+        top: -9px;
+        left: -9px;
+        position: relative;
+        border: none;
+        background: none;
+        font-weight: bold;
+        color: rgb(195,195,195);
+    }
+    .thumb button.close:hover {
+        color: rgb(1,1,1);
+    }
+    .thumb button.close:focus {
+        outline: none;
+        font-weight: bolder;
+        color: rgb(1, 1, 1);
+    }
+    .well {
+        min-height: 20px;
+        padding: 19px;
+        margin-bottom: 20px;
+        background-color: #f5f5f5;
+        border: 1px solid #e3e3e3;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+    }
+    .center {
+        text-align: center;
+    }
+    .bottom {
+        position: absolute;
+        bottom: 0px;
+    }
+    .mid {
+        position: absolute;
+        bottom: 12px;
+    }
+    .high {
+        position: absolute;
+        bottom: 24px;
+
+    }
 </style>
 
-<div id="mainPopup">
-<h1>Welcome to Instafication</h1>
-<p>To use this extension, please log in to your Postmates account.</p>
-<form name="setupForm" onsubmit="return setup()">
-    <div style="display:block"><label>Username</label><input name="user" type="text"></div>
-    <div style="display:block"><label>Password</label><input name="password" type="password"></div>
-    <input type="submit"></input>
-</form>
+<div id="mainPopup" class="well">
 
-<script>
-    function setup() {
-        console.log('hello!');
-        return false;
-    }
-</script>
 </div>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="pageload.js"></script>

@@ -1,9 +1,9 @@
 {
-  "name": "Instafication",
+  "name": "Instant",
   "version": "0.0.1",
   "manifest_version": 2,
   "description": "A Chrome extension for getting things sooner with Postmates",
-  "homepage_url": "http://pennapps.rrotaru.com",
+  "homepage_url": "http://instafication-api.herokuapp.com",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -19,12 +19,17 @@
   "options_page": "src/options_custom/index.html",
   "page_action": {
     "default_icon": "icons/icon19.png",
-    "default_title": "page action demo",
+    "default_title": "View your schedules deliveries",
     "default_popup": "src/page_action/page_action.html"
   },
   "permissions": [
     "geolocation",
     "storage"
+  ],
+  "web_accessible_resources": [
+    "icons/*.png",
+    "icons/*.svg",
+    "icons/*.gif"
   ],
   "content_scripts": [
     {
@@ -33,7 +38,6 @@
       ],
       "css": [
         "src/inject/jquery-ui.css",
-        "src/inject/jquery.progressbar.css",
         "src/inject/inject.css"
       ]
     },
@@ -41,10 +45,12 @@
       "matches": [
         "<all_urls>"
       ],
+      "exclude_matches": [
+        "*://*.google.com/*"
+      ],
       "js": [
         "src/inject/jquery.js",
         "src/inject/jquery-ui.js",
-        "src/inject/jquery.progressbar.js",
         "src/inject/inject.js"
       ]
     }
